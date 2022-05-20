@@ -8,8 +8,6 @@ const bodyParser = require('body-parser');
 const routerCards = require('./routes/cards');
 const routerUsers = require('./routes/users');
 
-
-
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(bodyParser.json());

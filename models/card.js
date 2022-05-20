@@ -18,6 +18,7 @@ const cardSchema = new mongoose.Schema({
   },
   likes: [// список лайкнувших пост пользователей
     { // по умолчанию — пустой массив (поле default)
+      default: [],
       type: mongoose.Types.ObjectId,
       ref: 'user',
     },
