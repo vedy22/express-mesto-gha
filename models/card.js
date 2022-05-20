@@ -16,13 +16,12 @@ const cardSchema = new mongoose.Schema({
     ref: 'user',
     required: true, // обязательное поле
   },
-  likes: [// список лайкнувших пост пользователей
+  likes: // список лайкнувших пост пользователей
     { // по умолчанию — пустой массив (поле default)
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
       default: [],
-      type: mongoose.Types.ObjectId,
-      ref: 'user',
     },
-  ],
+
   createdAt: { //  дата создания:
     type: Date, // это Date
     default: Date.now(), // значение по умолчанию Date.now
