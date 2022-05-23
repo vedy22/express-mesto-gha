@@ -14,7 +14,7 @@
     "url": "git+https://github.com/vedy22/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tatyana Gaputina. Бэкенд для проекта mesto.",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/vedy22/express-mesto-gha/issues"
@@ -27,8 +27,12 @@
     "nodemon": "^2.0.16"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.2",
-    "express": "^4.18.1",
-    "mongoose": "^6.2.4"
+    "celebrate": "^15.0.1",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.4",
+    "validator": "^13.7.0"
   }
 }
