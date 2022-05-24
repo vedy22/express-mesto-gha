@@ -9,7 +9,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена');// 404
       }
-      if (String(card.owner) === req.userId) {
+      if (String(card.owner) === req.user._id) {
         Card.findByIdAndRemove(req.params.id)
           .then(() => { //
             res.send({ message: 'Карточка удалена' });
@@ -29,7 +29,7 @@ module.exports.deleteCard = (req, res, next) => {
 };
 module.exports.createCard = (req, res, next) => {
   // console.log(`owner: ${req.user._id}`); // _id станет доступен
-  const owner = req.userId;
+  const owner = req.user._id;
   const { name, link } = req.body;
   const likes = [];
   Card.create({
@@ -60,7 +60,7 @@ module.exports.getCards = (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.userId } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .then((card) => {
