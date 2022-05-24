@@ -5,14 +5,14 @@ const BadRequestError = require('../errors/bad-request-err'); // 400
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
-    .then((card) => { //
+    .then((card) => { 
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена');// 404
       }
       if (String(card.owner) === req.user._id) {
         Card.findByIdAndRemove(req.params.id)
-          .then(() => { //
-            res.send({ message: 'Карточка удалена' });
+          .then(() => {
+            res.status(200).send({ message: 'Карточка удалена' });
           });
       } else {
         throw new ForbiddenError('Нельзя удалять чужую карточку'); // 403
@@ -21,7 +21,7 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       // console.dir(err);
       if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный id')); // 400
+        throw new BadRequestError('Невалидный id'); // 400
       } else {
         next(err);
       }
