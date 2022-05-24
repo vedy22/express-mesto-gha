@@ -4,16 +4,16 @@ const ForbiddenError = require('../errors/forbidden-err'); // 403
 const BadRequestError = require('../errors/bad-request-err'); // 400
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.id)
-    .then((card) => { //
+  // eslint-disable-next-line indent
+    Card.findById(req.params.id)
+    .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');// 404
+        throw new NotFoundError('Карточка с указанным _id не найдена'); // 404
       }
       if (String(card.owner) === req.user._id) {
-        Card.findByIdAndRemove(req.params.id)
-          .then(() => { //
-            res.send({ message: 'Карточка удалена' });
-          });
+        Card.findByIdAndRemove(req.params.id).then(() => {
+          res.send({ message: 'Карточка удалена' });
+        });
       } else {
         throw new ForbiddenError('Нельзя удалять чужую карточку'); // 403
       }
@@ -33,7 +33,10 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const likes = [];
   Card.create({
-    name, link, owner, likes,
+    name,
+    link,
+    owner,
+    likes,
   })
     .then((card) => res.send({
       createdAt: card.createdAt,
@@ -46,7 +49,11 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       // console.dir(err);
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки')); // 400
+        next(
+          new BadRequestError(
+            'Переданы некорректные данные при создании карточки',
+          ),
+        ); // 400
       } else {
         next(err);
       }
@@ -54,7 +61,7 @@ module.exports.createCard = (req, res, next) => {
 };
 module.exports.getCards = (req, res, next) => {
   Card.find({}) // запрос всех
-    .then((cards) => res.send({ cards }))//
+    .then((cards) => res.send({ cards })) //
     .catch(next);
 };
 module.exports.likeCard = (req, res, next) => {
@@ -94,7 +101,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');// 404
+        throw new NotFoundError('Карточка с указанным _id не найдена'); // 404
       } else {
         res.send({
           createdAt: card.createdAt,
