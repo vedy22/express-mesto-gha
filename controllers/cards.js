@@ -4,35 +4,36 @@ const ForbiddenError = require('../errors/forbidden-err'); // 403
 const BadRequestError = require('../errors/bad-request-err'); // 400
 
 module.exports.deleteCard = (req, res, next) => {
-  // eslint-disable-next-line no-undef
-  Сard.findById(req.params.cardId)
-    .then((cards) => {
-      if (!cards) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else if (!cards.owner.equals(req.user._id)) {
-        throw new ForbiddenError('Попытка удалить чужую карточку.');
+  Card.findById(req.params.id)
+    .then((card) => { //
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным _id не найдена');// 404
+      }
+      if (String(card.owner) === req.user._id) {
+        Card.findByIdAndRemove(req.params.id)
+          .then(() => { //
+            res.send({ message: 'Карточка удалена' });
+          });
       } else {
-        return cards.remove().then(() => res.status(200).send(cards));
+        throw new ForbiddenError('Нельзя удалять чужую карточку'); // 403
       }
     })
     .catch((err) => {
+      // console.dir(err);
       if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
+        next(new BadRequestError('Невалидный id')); // 400
+      } else {
+        next(err);
       }
-      return next(err);
     });
 };
-
 module.exports.createCard = (req, res, next) => {
   // console.log(`owner: ${req.user._id}`); // _id станет доступен
   const owner = req.user._id;
   const { name, link } = req.body;
   const likes = [];
   Card.create({
-    name,
-    link,
-    owner,
-    likes,
+    name, link, owner, likes,
   })
     .then((card) => res.send({
       createdAt: card.createdAt,
@@ -45,11 +46,7 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       // console.dir(err);
       if (err.name === 'ValidationError') {
-        next(
-          new BadRequestError(
-            'Переданы некорректные данные при создании карточки',
-          ),
-        ); // 400
+        next(new BadRequestError('Переданы некорректные данные при создании карточки')); // 400
       } else {
         next(err);
       }
@@ -57,7 +54,7 @@ module.exports.createCard = (req, res, next) => {
 };
 module.exports.getCards = (req, res, next) => {
   Card.find({}) // запрос всех
-    .then((cards) => res.send({ cards })) //
+    .then((cards) => res.send({ cards }))//
     .catch(next);
 };
 module.exports.likeCard = (req, res, next) => {
@@ -97,7 +94,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена'); // 404
+        throw new NotFoundError('Карточка с указанным _id не найдена');// 404
       } else {
         res.send({
           createdAt: card.createdAt,
