@@ -5,7 +5,7 @@ const BadRequestError = require('../errors/bad-request-err'); // 400
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
-    .then((card) => { 
+    .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена');// 404
       }
