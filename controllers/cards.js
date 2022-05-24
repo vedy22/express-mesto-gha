@@ -4,29 +4,25 @@ const ForbiddenError = require('../errors/forbidden-err'); // 403
 const BadRequestError = require('../errors/bad-request-err'); // 400
 
 module.exports.deleteCard = (req, res, next) => {
-  // eslint-disable-next-line indent
-    Card.findById(req.params.id)
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена'); // 404
-      }
-      if (String(card.owner) === req.user._id) {
-        Card.findByIdAndRemove(req.params.id).then(() => {
-          res.send({ message: 'Карточка удалена' });
-        });
+  // eslint-disable-next-line no-undef
+  Сard.findById(req.params.cardId)
+    .then((cards) => {
+      if (!cards) {
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
+      } else if (!cards.owner.equals(req.user._id)) {
+        throw new ForbiddenError('Попытка удалить чужую карточку.');
       } else {
-        throw new ForbiddenError('Нельзя удалять чужую карточку'); // 403
+        return cards.remove().then(() => res.status(200).send(cards));
       }
     })
     .catch((err) => {
-      // console.dir(err);
       if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный id')); // 400
-      } else {
-        next(err);
+        return next(new BadRequestError('Переданы некорректные данные при удалении карточки.'));
       }
+      return next(err);
     });
 };
+
 module.exports.createCard = (req, res, next) => {
   // console.log(`owner: ${req.user._id}`); // _id станет доступен
   const owner = req.user._id;
